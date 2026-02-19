@@ -12,6 +12,12 @@ namespace ECommerceAPI.Repositories
         {
             _context = context;
         }
+        public async Task<Product> UpdateAsync(Product product)
+        {
+            _context.Products.Update(product);
+            await _context.SaveChangesAsync();
+            return product;
+        }
 
         public async Task<IEnumerable<Product>> GetAllAsync()
         {

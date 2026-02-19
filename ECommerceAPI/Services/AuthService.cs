@@ -26,11 +26,15 @@ namespace ECommerceAPI.Services
             if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
                 throw new ArgumentException("Bu email zaten kayıtlı!");
 
+            // İlk kayıt olan kullanıcı Admin olsun
+            var isFirstUser = !await _context.Users.AnyAsync();
+
             var user = new User
             {
                 Username = dto.Username,
                 Email = dto.Email,
-                PasswordHash = HashPassword(dto.Password)
+                PasswordHash = HashPassword(dto.Password),
+                Role = isFirstUser ? "Admin" : "User"
             };
 
             _context.Users.Add(user);
@@ -96,5 +100,47 @@ namespace ECommerceAPI.Services
         {
             return HashPassword(password) == hash;
         }
+        public async Task<UserProfileDto?> GetProfileAsync(int userId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return null;
+
+            return new UserProfileDto
+            {
+                Id = user.Id,
+                Username = user.Username,
+                Email = user.Email,
+                Role = user.Role,
+                CreatedAt = user.CreatedAt
+            };
+        }
+
+        public async Task<UserProfileDto?> UpdateProfileAsync(int userId, UpdateProfileDto dto)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return null;
+
+            user.Username = dto.Username;
+
+            if (!string.IsNullOrEmpty(dto.CurrentPassword) && !string.IsNullOrEmpty(dto.NewPassword))
+            {
+                if (!VerifyPassword(dto.CurrentPassword, user.PasswordHash))
+                    throw new ArgumentException("Mevcut şifre hatalı!");
+
+                user.PasswordHash = HashPassword(dto.NewPassword);
+            }
+
+            await _context.SaveChangesAsync();
+
+            return new UserProfileDto
+            {
+                Id = user.Id,
+                Username = user.Username,
+                Email = user.Email,
+                Role = user.Role,
+                CreatedAt = user.CreatedAt
+            };
+        }
     }
+
 }
