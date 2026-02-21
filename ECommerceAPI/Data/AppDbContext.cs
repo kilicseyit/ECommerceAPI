@@ -14,17 +14,38 @@ namespace ECommerceAPI.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<User> Users { get; set; }
-
+        public DbSet<Review> Reviews { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Favorite> Favorites { get; set; }
+        public DbSet<Message> Messages { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Message>(entity =>
+            {
+                entity.HasOne(m => m.Sender)
+                      .WithMany()
+                      .HasForeignKey(m => m.SenderId)
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(m => m.Receiver)
+                      .WithMany()
+                      .HasForeignKey(m => m.ReceiverId)
+                      .OnDelete(DeleteBehavior.NoAction);
+            });
             // Product konfigürasyonu
             modelBuilder.Entity<Product>(entity =>
             {
                 entity.Property(p => p.Price)
                       .HasColumnType("decimal(18,2)");
+                entity.Property(p => p.DiscountPrice)
+                      .HasColumnType("decimal(18,2)");
                 entity.Property(p => p.Name)
                       .IsRequired()
                       .HasMaxLength(200);
+                entity.HasOne(p => p.User)
+                      .WithMany()
+                      .HasForeignKey(p => p.UserId)
+                      .OnDelete(DeleteBehavior.NoAction);
             });
 
             // OrderItem konfigürasyonu
@@ -40,6 +61,10 @@ namespace ECommerceAPI.Data
             {
                 entity.Property(o => o.TotalPrice)
                       .HasColumnType("decimal(18,2)");
+                entity.HasOne(o => o.User)
+                    .WithMany()
+                    .HasForeignKey(o => o.UserId)
+                    .OnDelete(DeleteBehavior.NoAction);
             });
         }
     }

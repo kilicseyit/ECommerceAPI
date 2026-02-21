@@ -4,6 +4,7 @@ using ECommerceAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ECommerceAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260221023136_AddFavorites")]
+    partial class AddFavorites
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -73,39 +76,6 @@ namespace ECommerceAPI.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Favorites");
-                });
-
-            modelBuilder.Entity("ECommerceAPI.Models.Message", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("ReceiverId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SenderId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReceiverId");
-
-                    b.HasIndex("SenderId");
-
-                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("ECommerceAPI.Models.Notification", b =>
@@ -334,7 +304,7 @@ namespace ECommerceAPI.Migrations
             modelBuilder.Entity("ECommerceAPI.Models.Favorite", b =>
                 {
                     b.HasOne("ECommerceAPI.Models.Product", "Product")
-                        .WithMany("Favorites")
+                        .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -348,25 +318,6 @@ namespace ECommerceAPI.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ECommerceAPI.Models.Message", b =>
-                {
-                    b.HasOne("ECommerceAPI.Models.User", "Receiver")
-                        .WithMany()
-                        .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("ECommerceAPI.Models.User", "Sender")
-                        .WithMany()
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Receiver");
-
-                    b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("ECommerceAPI.Models.Notification", b =>
@@ -468,8 +419,6 @@ namespace ECommerceAPI.Migrations
 
             modelBuilder.Entity("ECommerceAPI.Models.Product", b =>
                 {
-                    b.Navigation("Favorites");
-
                     b.Navigation("OrderItems");
 
                     b.Navigation("Reviews");

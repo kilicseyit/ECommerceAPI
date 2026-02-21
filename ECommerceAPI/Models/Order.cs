@@ -8,6 +8,8 @@
         public decimal TotalPrice { get; set; }
         public OrderStatus Status { get; set; } = OrderStatus.Pending;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public int UserId { get; set; }
+        public User? User { get; set; }
 
         // İlişki
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();

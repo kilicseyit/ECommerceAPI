@@ -9,5 +9,6 @@ namespace ECommerceAPI.Services
         Task<ProductDto> CreateAsync(CreateProductDto dto);
         Task<ProductDto?> UpdateAsync(int id, UpdateProductDto dto);
         Task<bool> DeleteAsync(int id);
+        Task<IEnumerable<ProductDto>> GetMyProductsAsync(int userId);
     }
 }
